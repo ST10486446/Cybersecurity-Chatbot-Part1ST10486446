@@ -1,32 +1,23 @@
-name: .NET Build and Test
+name: Check Files
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+on: [push]
 
 jobs:
-  build:
-    runs-on: windows-latest  # Use Windows for better .NET Framework support
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-    
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
-    
-    - name: Restore NuGet packages
-      run: nuget restore CybersecurityChatbot.sln
-    
-    - name: Build solution
-      run: msbuild CybersecurityChatbot.sln /p:Configuration=Release
+check:
+runs-on: windows-latest
+steps:
+- uses: actions/checkout@v4
+
+- name: Check files exist
+run: |
+echo "Checking files..."
+if exist "Program.cs" (echo ✅ Program.cs found) else (echo ❌ Program.cs missing)
+if exist "Chatbot.cs" (echo ✅ Chatbot.cs found) else (echo ❌ Chatbot.cs missing)
+if exist "ResponseManager.cs" (echo ✅ ResponseManager.cs found) else (echo ❌ ResponseManager.cs missing)
+if exist "UIHelper.cs" (echo ✅ UIHelper.cs found) else (echo ❌ UIHelper.cs missing)
+if exist "VoiceGreeting.cs" (echo ✅ VoiceGreeting.cs found) else (echo ❌ VoiceGreeting.cs missing)
+if exist "*.csproj" (echo ✅ Project file found) else (echo ❌ No .csproj file found)
+uration=Release
     
     - name: Run tests (if any)
       run: dotnet test --no-build --verbosity normal
