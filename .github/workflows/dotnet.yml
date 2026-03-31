@@ -1,0 +1,68 @@
+name: Cybersecurity Chatbot CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Display .NET info
+      run: dotnet --info
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Verify build output
+      run: |
+        echo "Checking build output..."
+        dir bin\Release\net8.0\ || echo "Build output not found"
+    
+    - name: Check for required files
+      run: |
+        echo "Checking for required source files..."
+        if (Test-Path "Program.cs") { echo "✓ Program.cs found" } else { echo "✗ Program.cs missing" }
+        if (Test-Path "Chatbot.cs") { echo "✓ Chatbot.cs found" } else { echo "✗ Chatbot.cs missing" }
+        if (Test-Path "AudioPlayer.cs") { echo "✓ AudioPlayer.cs found" } else { echo "✗ AudioPlayer.cs missing" }
+        if (Test-Path "AsciiArt.cs") { echo "✓ AsciiArt.cs found" } else { echo "✗ AsciiArt.cs missing" }
+        if (Test-Path "ConsoleFormatter.cs") { echo "✓ ConsoleFormatter.cs found" } else { echo "✗ ConsoleFormatter.cs missing" }
+        if (Test-Path "CybersecurityResponses.cs") { echo "✓ CybersecurityResponses.cs found" } else { echo "✗ CybersecurityResponses.cs missing" }
+    
+    - name: Run syntax check
+      run: |
+        echo "Running syntax validation..."
+        dotnet build --no-restore --verbosity minimal
+
+  # Optional: Test on Ubuntu (for cross-platform compatibility)
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
